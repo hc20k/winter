@@ -144,4 +144,198 @@ namespace game {
 		int data_type;
 		unsigned int adler;
 	};
+
+	typedef float vec3_t[3];
+	typedef float vec4_t[4];
+
+
+
+
+
+	struct DObjAnimMat
+	{
+		float quat[4];
+		float trans[3];
+		float transWeight;
+	};
+	struct __declspec(align(16)) XSurface
+	{
+		char unknownData1[0x10];
+		char tileMode;
+		char vertListCount;
+		unsigned __int16 flags;
+		unsigned __int16 vertCount;
+		unsigned __int16 triCount;
+		unsigned __int16 baseVertIndex;
+		unsigned __int16 *triIndices;							//Loaded Last, size = ((triCount << 1) + triCount) << 1
+		//XSurfaceVertexInfo vertInfo;
+		//unknownXModelStruct1Internal2 unkInternal2;		//if flags & 1 then use option2 else use verts0
+		//D3DVertexBuffer vertexBuffer;
+		//union
+		//{
+		//	XRigidVertList *vertList;
+		//	XRigidVertList *vertListEA;
+		//};
+		//D3DIndexBuffer indexBuffer;
+		//int partBits[5];
+	};
+	struct ScriptString
+	{
+	};
+	struct XModel
+	{
+		const char *name;
+		char numBones;
+		char numRootBones;
+		char numsurfs;
+		char lodRampType;
+		union
+		{
+			ScriptString * boneNames;
+			ScriptString * localBoneNames;
+		};
+		union
+		{
+			char * parentList;  //size = numBones - numRootBones
+			char * localParentList;  //size = numBones - numRootBones
+		};
+		union
+		{
+			unsigned short * quats;		//size = (numBones - numRootBones) << 3
+			unsigned short * localQuats;	//size = (numBones - numRootBones) << 3
+		};
+		union
+		{
+			float * trans;							//size = (numBones - numRootBones) << 4
+			float * localTrans;							//size = (numBones - numRootBones) << 4
+		};
+		char *partClassification;		//size = numBones
+		DObjAnimMat *baseMat;					//size = numBones << 5
+		XSurface *surfs;	//count = numsurfs
+	};
+
+
+	struct WeaponDef
+	{
+		const char *szOverlayName;
+		XModel *gunXModel;//**
+		XModel *handXModel;
+		const char *szModeName;
+	};
+	struct WeaponVariantDef
+	{
+		char* name;
+		int iVariantCount;
+		WeaponDef *weapDef;
+		const char *szDisplayName;
+		const char *szAltWeaponName;
+		const char *szAttachmentUnique;
+		//.....
+	};
+
+
+
+
+
+
+	struct D3DBaseTexture
+	{
+		void* a1;
+		char pad[0x30];
+		//char pad[0x34];
+	};
+	struct GfxImage
+	{
+		D3DBaseTexture basemap;//size = 0x34    52
+		char mapType;//							53
+		char unknown3;//						54
+		char unknown4;//						55
+		char unknown5;//						56
+		int size;//								60
+		unsigned __int16 width;//				62
+		unsigned __int16 height;//				64
+		unsigned __int16 depth;//				66
+		char levelCount;//						67
+		char streaming;//						68
+		unsigned int baseSize;//				72
+		char *pixels;//							76 (pointer = 4 else char itself = 2)
+		char unknownData2[0x7C];//				200
+		char streamedPartCount;//				201
+		const char *name;//						205
+		unsigned int hash;//					209
+	};
+	//palceholder
+	struct D3DPixelShader
+	{
+
+	};
+	struct D3DVertexShader
+	{
+
+	};
+
+	struct RawFile
+	{
+		const char *Name;
+		int Length;
+		const char *Buffer;
+	};
+
+	union XAssetHeader
+	{
+		// 	XModelPieces *xmodelPieces;
+		// 	PhysPreset *physPreset;
+		// 	PhysConstraints *physConstraints;
+		// 	DestructibleDef *destructibleDef;
+		// 	XAnimParts *parts;
+		XModel *model;
+		void *material;
+		// 	MaterialPixelShader *pixelShader;
+		// 	MaterialVertexShader *vertexShader;
+		// 	MaterialTechniqueSet *techniqueSet;
+		GfxImage *image;
+		// 	SndBank *sound;
+		// 	SndPatch *soundPatch;
+		// 	clipMap_t *clipMap;
+		// 	ComWorld *comWorld;
+		// 	GameWorldSp *gameWorldSp;
+		// 	GameWorldMp *gameWorldMp;
+		// 	MapEnts *mapEnts;
+		// 	GfxWorld *gfxWorld;
+		// 	GfxLightDef *lightDef;
+		//Font_s *font;
+		// 	FontIcon *fontIcon;
+		// 	MenuList *menuList;
+		// 	menuDef_t *menu;
+		//LocalizeEntry *localize;
+		WeaponVariantDef *weapon;
+		// 	WeaponAttachment *attachment;
+		// 	WeaponAttachmentUnique *attachmentUnique;
+		// 	WeaponCamo *weaponCamo;
+		// 	SndDriverGlobals *sndDriverGlobals;
+		// 	FxEffectDef *fx;
+		// 	FxImpactTable *impactFx;
+		RawFile *rawfile;
+		// 	StringTable *stringTable;
+		// 	LeaderboardDef *leaderboardDef;
+		// 	XGlobals *xGlobals;
+		// 	ddlRoot_t *ddlRoot;
+		// 	Glasses *glasses;
+		// 	//TextureList *textureList;
+		// 	void *textureList;
+		// 	EmblemSet *emblemSet;
+		// 	ScriptParseTree *scriptParseTree;
+		// 	KeyValuePairs *keyValuePairs;
+		// 	VehicleDef *vehicleDef;
+		// 	MemoryBlock *memoryBlock;
+		// 	AddonMapEnts *addonMapEnts;
+		// 	TracerDef *tracerDef;
+		// 	SkinnedVertsDef *skinnedVertsDef;
+		// 	Qdb *qdb;
+		// 	Slug *slug;
+		// 	FootstepTableDef *footstepTableDef;
+		// 	FootstepFXTableDef *footstepFXTableDef;
+		// 	ZBarrierDef *zbarrierDef;
+		void *data;
+	};
 }

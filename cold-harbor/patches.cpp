@@ -22,14 +22,16 @@ hooking::detour top_level_excecution_filter;
 hooking::detour db_authload_init;
 hooking::detour db_authload_getiv;
 hooking::detour db_authload_analyzedata;
+hooking::detour validate_file_header_hook;
+hooking::detour db_authload_add_checksum_hook;
 
 
 
 bool is_loading_unsigned = false;
 
-int db_find_xasset_header_stub(int type, const char* a2, char a3, int a4) {
+game::XAssetHeader db_find_xasset_header_stub(int type, const char* a2, char a3, int a4) {
 	spdlog::info("Loading asset '{}' of type {}", a2, type);
-	int result = db_find_xasset_header.invoke<int>(type, a2, a3, a4);
+	auto result = db_find_xasset_header.invoke<game::XAssetHeader>(type, a2, a3, a4);
 	return result;
 }
 
@@ -118,7 +120,10 @@ void try_load_zone(const char* name) {
 int com_init_ui_and_common_xassets_stub() {
 	spdlog::info("Loading common and ui xassets");
 	int res = com_init_ui_and_common_xassets.invoke<int>();
-	try_load_zone("patch_coldharbor");
+	try_load_zone("coldharbor");
+
+	// test
+	auto testload = db_find_xasset_header_stub(game::ASSET_TYPE_RAWFILE, "testrawfile.txt", 1, -1).rawfile;
 
 	return res;
 }
@@ -153,13 +158,11 @@ BOOL WINAPI is_debugger_present_hook() {
 
 int db_authload_init_stub(const uint8_t* buf, const char* name, char version, bool isSecure) {
 	int ret = db_authload_init.invoke<int>(buf, name, version, isSecure);
-	if (strstr(name, "coldharbor") == nullptr) {
-		spdlog::info("Authenticating fastfile '{}' -> {:#x}", name, ret);
-	}
-	else {
-		ret = 0;
+	if (is_loading_unsigned) {
 		spdlog::error("Skipping authload for fastfile '{}'", name);
+		return 0;
 	}
+	spdlog::info("Authenticating fastfile '{}' -> {:#x}", name, ret);
 	return ret;
 }
 
@@ -174,13 +177,12 @@ int db_authload_getiv_stub(int a1, void* a2) {
 }
 
 int db_authload_analyzedata_stub(void *Src, int a2, void *a3, int a4, int a5, const uint8_t* iv, int a7) {
-	int ret = db_authload_analyzedata.invoke<int>(Src, a2, a3, a4, a5, iv, a7);
 	if (is_loading_unsigned) {
-		spdlog::error("Unsigned fastfile IV: {:#x}", *(uint64_t*)iv);
+		// skips salsa20 & sha1
 		return 0;
 	}
 	
-	return ret;
+	return db_authload_analyzedata.invoke<int>(Src, a2, a3, a4, a5, iv, a7);
 }
 
 int inflate_stub(game::z_stream_s* zstream, int a2) {
@@ -200,6 +202,32 @@ int inflate_stub(game::z_stream_s* zstream, int a2) {
 	return ret;
 }
 
+char* validate_file_header_stub(bool* isSecure, int* version) {
+	auto ret = validate_file_header_hook.invoke<char*>(isSecure, version);
+	if (ret && !strcmp("file not supported", ret)) {
+		// TODO: actually handle unencrypted fastfiles
+		return nullptr;
+	}
+	return ret;
+}
+
+int db_authload_add_checksum_stub(int a1, int a2) {
+	if (is_loading_unsigned) {
+		//++dword_1299374[v3]; // dword_1299374 -> int[5]
+		*reinterpret_cast<int*>(0x1299374 + a1 * 4) += 1;
+		return 0;
+	}		
+	return db_authload_add_checksum_hook.invoke<int>(a1, a2);
+}
+
+int db_authload_end_stub() {
+	if (is_loading_unsigned) {
+		spdlog::info("Skipping authload end");
+		return 0;
+	}
+	return db_authload_add_checksum_hook.invoke<int>();
+}
+
 void patches::init() {
 	memory::write<bool>(0x89925C, false); // ui_netsource 0
 	memory::write<bool>(0x88A5AF, true); // xblive_rankedmatch 1
@@ -210,21 +238,23 @@ void patches::init() {
 	memory::write<bool>(0x6B6607, true); // gpad_enabled 1
 
 	// various patches that make offline mode work
-	memory::write<int>(0x5BFA6B, 0xEB);
+	/*memory::write<int>(0x5BFA6B, 0xEB);
 	memory::write<int>(0x5DDC20, 0xC3);
 	memory::write<int>(0x544240, 0xC3);
 	memory::write<int>(0xC1D910, 0x33);
 	memory::write<int>(0xBE0F26, 0x33);
-	memory::write<int>(0x4BE550, 0xC3);
+	memory::write<int>(0x4BE550, 0xC3);*/
 
-	//db_find_xasset_header.create(xxx, &db_find_xasset_header_stub);
+	db_find_xasset_header.create(0x526800, &db_find_xasset_header_stub);
 	//db_try_load_xfile_internal.create(xxx, &db_try_load_xfile_internal_stub);
 	com_init_ui_and_common_xassets.create(0x4AF170, &com_init_ui_and_common_xassets_stub);
 	db_load_xfile.create(0x4A6770, &db_load_xfile_stub);
 	db_authload_init.create(0x667230, &db_authload_init_stub);
-	hooking::call(0x5476F3, &inflate_stub); // inflate
+	//hooking::call(0x5476F3, &inflate_stub); // inflate
 	//db_authload_getiv.create(0x55FFC0, &db_authload_getiv_stub);
 	db_authload_analyzedata.create(0x495370, &db_authload_analyzedata_stub);
+	validate_file_header_hook.create(0x6C23D0, &validate_file_header_stub);
+	hooking::nop(0x6C1C89, 5); // nop DB_AuthLoad_End
 
 	auto kernel32 = GetModuleHandleA("kernel32.dll");
 	if (kernel32 == NULL) {

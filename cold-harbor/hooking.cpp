@@ -142,7 +142,6 @@ void hooking::qmov(void* place, void* target) {
 }
 
 void hooking::qmov(const size_t place, const size_t target) {
-	spdlog::info("qmov {} {}", place, target);
 	qmov(reinterpret_cast<void*>(place), reinterpret_cast<void*>(target));
 }
 

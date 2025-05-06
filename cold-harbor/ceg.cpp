@@ -63,10 +63,10 @@ void ceg::init() {
 
 	// remove all hooks from nightly
 	for (auto& call : nightly_hook_calls) {
-		hooking::nop(dll_offset(call), 5);
+		//hooking::nop(dll_offset(call), 5);
 	}
 
-	reinterpret_cast<int(*)()>(dll_offset(0x1001ABA0))(); // fuck ceg !
+	hooking::invoke<int>(dll_offset(0x1001ABA0)); // fuck ceg !
 
 	auto steam_api = GetModuleHandleA("steam_api.dll");
 	assert(steam_api != NULL);

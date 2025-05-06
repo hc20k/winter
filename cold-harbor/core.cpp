@@ -60,8 +60,8 @@ void core::init() {
 	SetConsoleTitleA("Winter Console");
 
 	//filesystem::init();
-	patches::init();
 	ceg::init();
+	patches::init();
 
 	spdlog::info("It's getting cold in here");
 	memcpy(OriginalEP, OriginalCode, 20);
