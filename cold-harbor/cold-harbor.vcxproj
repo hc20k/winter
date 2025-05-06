@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{c49160ca-0eaf-4fba-b291-b93f64f75b0a}</ProjectGuid>
+    <RootNamespace>coldharbor</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>F:\Games\Steam\steamapps\common\Call of Duty Black Ops II</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>F:\Games\Steam\steamapps\common\Call of Duty Black Ops II</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>F:\Games\Steam\steamapps\common\Call of Duty Black Ops II</OutDir>
+    <IncludePath>C:\Users\pluto\Projects\t6\cold-harbor\cold-harbor\include;$(IncludePath)</IncludePath>
+    <TargetName>winter</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>F:\Games\Steam\steamapps\common\Call of Duty Black Ops II</OutDir>
+    <IncludePath>C:\Users\pluto\Projects\t6\cold-harbor\cold-harbor\include;$(IncludePath)</IncludePath>
+    <TargetName>winter</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;COLDHARBOR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;COLDHARBOR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;COLDHARBOR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;COLDHARBOR_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="steam\InterfaceManager.h" />
+    <ClInclude Include="steam\api.h" />
+    <ClInclude Include="ceg.h" />
+    <ClInclude Include="core.h" />
+    <ClInclude Include="demonware.h" />
+    <ClInclude Include="filesystem.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="hooking.h" />
+    <ClInclude Include="logging.h" />
+    <ClInclude Include="memory.h" />
+    <ClInclude Include="patches.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="steam\Classes\ProxiedClasses.h" />
+    <ClInclude Include="steam\Classes\ProxiedGameCoordinator.h" />
+    <ClInclude Include="steam\Classes\ProxiedGameServer.h" />
+    <ClInclude Include="steam\Classes\ProxiedGameServerStats.h" />
+    <ClInclude Include="steam\Classes\ProxiedGameStats.h" />
+    <ClInclude Include="steam\Classes\ProxiedHTTP.h" />
+    <ClInclude Include="steam\Classes\ProxiedMasterServerUpdater.h" />
+    <ClInclude Include="steam\Classes\ProxiedMatchmaking.h" />
+    <ClInclude Include="steam\Classes\ProxiedMatchmakingServers.h" />
+    <ClInclude Include="steam\Classes\ProxiedNetworking.h" />
+    <ClInclude Include="steam\Classes\ProxiedRemoteStorage.h" />
+    <ClInclude Include="steam\Classes\ProxiedUser.h" />
+    <ClInclude Include="steam\Classes\ProxiedUserStats.h" />
+    <ClInclude Include="steam\Classes\ProxiedUtils.h" />
+    <ClInclude Include="steam\Common\AppsCommon.h" />
+    <ClInclude Include="steam\Common\AppTicketCommon.h" />
+    <ClInclude Include="steam\Common\BillingCommon.h" />
+    <ClInclude Include="steam\Common\BridgeCommon.h" />
+    <ClInclude Include="steam\Common\ClientCommon.h" />
+    <ClInclude Include="steam\Common\ContentServerCommon.h" />
+    <ClInclude Include="steam\Common\ControllerCommon.h" />
+    <ClInclude Include="steam\Common\FriendCommon.h" />
+    <ClInclude Include="steam\Common\FriendsCommon.h" />
+    <ClInclude Include="steam\Common\GameCoordinatorCommon.h" />
+    <ClInclude Include="steam\Common\GameServerCommon.h" />
+    <ClInclude Include="steam\Common\GameServerStatsCommon.h" />
+    <ClInclude Include="steam\Common\GameStatsCommon.h" />
+    <ClInclude Include="steam\Common\HTTPCommon.h" />
+    <ClInclude Include="steam\Common\MasterServerUpdaterCommon.h" />
+    <ClInclude Include="steam\Common\MatchmakingCommon.h" />
+    <ClInclude Include="steam\Common\MatchmakingServersCommon.h" />
+    <ClInclude Include="steam\Common\MusicCommon.h" />
+    <ClInclude Include="steam\Common\NetworkingCommon.h" />
+    <ClInclude Include="steam\Common\OAuthCommon.h" />
+    <ClInclude Include="steam\Common\RemoteStorageCommon.h" />
+    <ClInclude Include="steam\Common\ScreenshotsCommon.h" />
+    <ClInclude Include="steam\Common\StreamLauncherCommon.h" />
+    <ClInclude Include="steam\Common\UGCCommon.h" />
+    <ClInclude Include="steam\Common\UnifiedMessagesCommon.h" />
+    <ClInclude Include="steam\Common\UserCommon.h" />
+    <ClInclude Include="steam\Common\UserStatsCommon.h" />
+    <ClInclude Include="steam\Common\UtilsCommon.h" />
+    <ClInclude Include="steam\Interfaces\IClientAppManager.h" />
+    <ClInclude Include="steam\Interfaces\IClientApps.h" />
+    <ClInclude Include="steam\Interfaces\IClientAudio.h" />
+    <ClInclude Include="steam\Interfaces\IClientBilling.h" />
+    <ClInclude Include="steam\Interfaces\IClientConfigStore.h" />
+    <ClInclude Include="steam\Interfaces\IClientContentServer.h" />
+    <ClInclude Include="steam\Interfaces\IClientDepotBuilder.h" />
+    <ClInclude Include="steam\Interfaces\IClientDeviceAuth.h" />
+    <ClInclude Include="steam\Interfaces\IClientEngine.h" />
+    <ClInclude Include="steam\Interfaces\IClientFriends.h" />
+    <ClInclude Include="steam\Interfaces\IClientGameCoordinator.h" />
+    <ClInclude Include="steam\Interfaces\IClientGameServer.h" />
+    <ClInclude Include="steam\Interfaces\IClientGameServerStats.h" />
+    <ClInclude Include="steam\Interfaces\IClientGameStats.h" />
+    <ClInclude Include="steam\Interfaces\IClientHTTP.h" />
+    <ClInclude Include="steam\Interfaces\IClientMasterServerUpdater.h" />
+    <ClInclude Include="steam\Interfaces\IClientMatchmaking.h" />
+    <ClInclude Include="steam\Interfaces\IClientMatchmakingServers.h" />
+    <ClInclude Include="steam\Interfaces\IClientMusic.h" />
+    <ClInclude Include="steam\Interfaces\IClientNetworkDeviceManager.h" />
+    <ClInclude Include="steam\Interfaces\IClientNetworking.h" />
+    <ClInclude Include="steam\Interfaces\IClientProductBuilder.h" />
+    <ClInclude Include="steam\Interfaces\IClientRemoteStorage.h" />
+    <ClInclude Include="steam\Interfaces\IClientScreenshots.h" />
+    <ClInclude Include="steam\Interfaces\IClientShortcuts.h" />
+    <ClInclude Include="steam\Interfaces\IClientStreamClient.h" />
+    <ClInclude Include="steam\Interfaces\IClientStreamLauncher.h" />
+    <ClInclude Include="steam\Interfaces\IClientUGC.h" />
+    <ClInclude Include="steam\Interfaces\IClientUnifiedMessages.h" />
+    <ClInclude Include="steam\Interfaces\IClientUser.h" />
+    <ClInclude Include="steam\Interfaces\IClientUserStats.h" />
+    <ClInclude Include="steam\Interfaces\IClientUtils.h" />
+    <ClInclude Include="steam\Interfaces\Interface_OSW.h" />
+    <ClInclude Include="steam\Interfaces\ISteam003.h" />
+    <ClInclude Include="steam\Interfaces\ISteam004.h" />
+    <ClInclude Include="steam\Interfaces\ISteam005.h" />
+    <ClInclude Include="steam\Interfaces\ISteam006.h" />
+    <ClInclude Include="steam\Interfaces\ISteam2Bridge001.h" />
+    <ClInclude Include="steam\Interfaces\ISteam2Bridge002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamAppList001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamApps005.h" />
+    <ClInclude Include="steam\Interfaces\ISteamAppTicket001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamBilling001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamBilling002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamClient012.h" />
+    <ClInclude Include="steam\Interfaces\ISteamContentServer002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamController001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamFriends013.h" />
+    <ClInclude Include="steam\Interfaces\ISteamGameCoordinator001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamGameServer011.h" />
+    <ClInclude Include="steam\Interfaces\ISteamGameServerStats001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamGameStats001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamHTTP001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamMasterServerUpdater001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamMatchmaking009.h" />
+    <ClInclude Include="steam\Interfaces\ISteamMatchmakingServers001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamMatchmakingServers002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamMusic001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamNetworking005.h" />
+    <ClInclude Include="steam\Interfaces\ISteamOAuth001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamRemoteStorage008.h" />
+    <ClInclude Include="steam\Interfaces\ISteamScreenshots001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamScreenshots002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamStreamLauncher001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUGC001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUGC002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUnifiedMessages001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser004.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser005.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser006.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser007.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser008.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser009.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser010.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser011.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser012.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser013.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser014.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser015.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser016.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUser017.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats003.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats004.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats005.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats006.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats007.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats008.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats009.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats010.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUserStats011.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUtils001.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUtils002.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUtils003.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUtils004.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUtils005.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUtils006.h" />
+    <ClInclude Include="steam\Interfaces\ISteamUtils007.h" />
+    <ClInclude Include="steam\Interfaces\SteamClient.h" />
+    <ClInclude Include="steam\stdinc.h" />
+    <ClInclude Include="steam\Steam.h" />
+    <ClInclude Include="steam\SteamCallback.h" />
+    <ClInclude Include="steam\SteamCommon.h" />
+    <ClInclude Include="steam\SteamTypes\CGameID.h" />
+    <ClInclude Include="steam\SteamTypes\CSteamAPIContext.h" />
+    <ClInclude Include="steam\SteamTypes\CSteamID.h" />
+    <ClInclude Include="steam\SteamTypes\ECurrencyCode.h" />
+    <ClInclude Include="steam\SteamTypes\EResult.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamAppUpdateStatsQueryType.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamBufferMethod.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamError.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamFindFilter.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamNotify.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamPaymentCardType.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamSeekMethod.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamServerType.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamSubscriptionBillingInfoType.h" />
+    <ClInclude Include="steam\SteamTypes\ESteamSubscriptionStatus.h" />
+    <ClInclude Include="steam\SteamTypes\EVoiceResult.h" />
+    <ClInclude Include="steam\SteamTypes\FriendGameInfo.h" />
+    <ClInclude Include="steam\SteamTypes\gameserveritem.h" />
+    <ClInclude Include="steam\SteamTypes\MatchMakingKeyValuePair.h" />
+    <ClInclude Include="steam\SteamTypes\servernetadr.h" />
+    <ClInclude Include="steam\SteamTypes\SteamSalt.h" />
+    <ClInclude Include="steam\SteamTypes\SteamTypes.h" />
+    <ClInclude Include="steam\SteamTypes\Steamworks.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamApp.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamAppDependencyInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamAppLaunchOption.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamAppStats.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamAppVersion.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamDiscountQualifier.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamElemInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamError.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamExternalBillingInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamGlobalUserID.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamOfflineStatus.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamPaymentCardInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamPaymentCardReceiptInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamPrepurchaseInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamPrepurchaseReceiptInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamProgress.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamSplitLocalUserID.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamSubscription.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamSubscriptionBillingInfo.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamSubscriptionDiscount.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamSubscriptionReceipt.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamSubscriptionStats.h" />
+    <ClInclude Include="steam\SteamTypes\TSteamUpdateStats.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamApps.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamClasses.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamClient.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamContentServer.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamFriends.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamGameCoordinator.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamGameServer.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamGameServerStats.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamGameStats.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamHTTP.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamMasterServerUpdater.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamMatchmaking.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamMatchmakingServers.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamNetworking.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamRemoteStorage.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamUser.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamUserStats.h" />
+    <ClInclude Include="steam\SteamWrappers\SteamUtils.h" />
+    <ClInclude Include="util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="steam\InterfaceManager.cpp" />
+    <ClCompile Include="steam\SteamCallback.cpp" />
+    <ClCompile Include="steam\SteamCommon.cpp" />
+    <ClCompile Include="steam\api.cpp" />
+    <ClCompile Include="ceg.cpp" />
+    <ClCompile Include="core.cpp" />
+    <ClCompile Include="demonware.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="filesystem.cpp" />
+    <ClCompile Include="hooking.cpp" />
+    <ClCompile Include="logging.cpp" />
+    <ClCompile Include="memory.cpp" />
+    <ClCompile Include="patches.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="steam\Classes\ProxiedGameCoordinator.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedGameServer.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedGameServerStats.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedGameStats.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedHTTP.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedMasterServerUpdater.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedMatchmaking.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedMatchmakingServers.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedNetworking.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedRemoteStorage.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedUser.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedUserStats.cpp" />
+    <ClCompile Include="steam\Classes\ProxiedUtils.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamApps.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamClient.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamContentServer.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamFriends.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamGameCoordinator.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamGameServer.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamGameServerStats.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamGameStats.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamHTTP.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamMasterServerUpdater.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamMatchmaking.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamMatchmakingServers.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamNetworking.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamRemoteStorage.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamUser.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamUserStats.cpp" />
+    <ClCompile Include="steam\SteamWrappers\SteamUtils.cpp" />
+    <ClCompile Include="util.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
