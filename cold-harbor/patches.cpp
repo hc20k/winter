@@ -26,9 +26,10 @@ hooking::detour validate_file_header_hook;
 hooking::detour db_authload_add_checksum_hook;
 hooking::detour db_reliable_fsopen_readonly_hook;
 hooking::detour db_load_xassets;
-
+hooking::detour lua_cod_getrawfile;
 
 bool is_loading_unsigned = false;
+bool is_loading_raw_lua = false;
 
 game::XAssetHeader db_find_xasset_header_stub(int type, const char* a2, char a3, int a4) {
 	spdlog::info("Loading asset '{}' of type {}", a2, type);
@@ -38,56 +39,6 @@ game::XAssetHeader db_find_xasset_header_stub(int type, const char* a2, char a3,
 
 int db_try_load_xfile_internal_stub(const char* name, int a2, int a3) {
 	return db_try_load_xfile_internal.invoke<int>(name, a2, a3);
-}
-
-bool load_unsigned_fastfile(const char* path, int f, const char* name, game::XBlock* blocks, void (_cdecl* interrupt)(), uint8_t* buf, int allocType, int flags, int requiredVersion, unsigned int desiredReadBytes) {
-
-	// g_load = 1299E00
-	game::DB_LoadData& g_load = *reinterpret_cast<game::DB_LoadData*>(0x1299E00);
-	int& g_numStreams = *reinterpret_cast<int*>(0xD3EB2C);
-
-	memset(&g_load, 0, sizeof(game::DB_LoadData));
-
-	g_load.f = f;
-	g_load.flags = flags;
-	g_load.ioBuffer = buf;
-	g_load.filename = name;
-	g_load.blocks = blocks;
-	g_load.interrupt = interrupt;
-	g_load.allocType = allocType;
-	g_load.ioBufferOffset = 0;
-	g_load.next_buffer = 0;
-	g_load.abort = 0;
-	g_load.requiredVersion = requiredVersion;
-
-	auto offset = hooking::invoke<uint32_t>(0x4120E0, g_load.f); // Stream_Easy_Tell
-	spdlog::info("Loading unsigned fastfile '{}', offset: {:#x}", name, offset);
-
-	g_load.readOffset = offset;
-	g_load.endOffset = offset + desiredReadBytes;
-
-	int v16 = 4;
-	do {
-		hooking::invoke<int>(0x7FAA40, path, f, name); // test read?
-		v16--;
-	} while (v16);
-
-	bool isSecure = false;
-	int version = -1;
-
-	auto header_error = hooking::invoke<const char*>(0x6C23D0, &isSecure, &version); // ValidateFileHeader
-	if (header_error != nullptr) {
-		spdlog::error("Error loading fastfile '{}': {}", name, header_error);
-		return false;
-	}
-	else {
-		spdlog::info("\tisSecure: {}, version: {:#x}", isSecure, version);
-	}
-
-	g_load.tail = 0;
-	g_load.head = g_numStreams;
-
-	return true;
 }
 
 bool db_load_xfile_stub(const char* path, int f, const char* name, game::XBlock* blocks, void (_cdecl* interrupt)(), uint8_t* buf, int allocType, int flags, int requiredVersion, unsigned int desiredReadBytes) {
@@ -113,8 +64,8 @@ void db_load_xassets_stub(const game::XZoneInfo* zone, unsigned int zoneCount, i
 }
 
 void try_load_zone(const char* name) {
-	strcpy_s(reinterpret_cast<char*>(0x12EED40), 64, name);
-	hooking::invoke<void>(0x465110);
+	strcpy_s(reinterpret_cast<char*>(0x12EED40), 64, name); // g_debugZoneName = name
+	hooking::invoke<void>(0x465110); // DB_UpdateDebugZone
 }
 
 int com_init_ui_and_common_xassets_stub() {
@@ -126,19 +77,6 @@ int com_init_ui_and_common_xassets_stub() {
 	auto testload = db_find_xasset_header_stub(game::ASSET_TYPE_RAWFILE, "ui_mp/t6/main.lua", 1, -1).rawfile;
 
 	return res;
-}
-
-int ki_kore_load_hook(void* kore, void* state, void* a3, void* a4, char* name) {
-	// basically lua_loadfile for compiled fastfile lua
-	//spdlog::info("Lua: {}", name);
-	int result = ki_kore_load.invoke<int>(kore, state, a3, a4, name);
-	if (result == 0) {
-		//spdlog::info("Lua loaded: {}", name);
-	}
-	else {
-		//spdlog::error("Lua failed to load: {}", name);
-	}
-	return result;
 }
 
 int com_error_hook(int32_t error_type, const char* fmt, ...) {
@@ -249,6 +187,35 @@ uint32_t db_reliable_fsopen_readonly_stub(const char* path_, uint32_t* outClumpS
 	return db_reliable_fsopen_readonly_hook.invoke<uint32_t>(path_, outClumpSize);
 }
 
+//int hks_compiler_stub(game::hks::lua_State* a1, void* a2, void* a3, game::XAssetHeader header, void* a5, void* a6, void* a7) {
+//	auto file = header.rawfile->Buffer;
+//
+//	// check if file starts with 1B 4C 75 61 51 (LuaQ)
+//	if (file[0] == 0x1B && file[1] == 0x4C && file[2] == 0x75 && file[3] == 0x61 && file[4] == 0x51) {
+//		// already compiled
+//		return hks_compiler.invoke<int>(a1, a2, a3, header, a5, a6, a7);
+//	}
+//
+//	a1->m_global->m_bytecodeSharingMode = game::hks::HKS_BYTECODE_SHARING_ON;
+//	int ret = hks_compiler.invoke<int>(a1, a2, a3, header, a5, a6, a7);
+//	a1->m_global->m_bytecodeSharingMode = game::hks::HKS_BYTECODE_SHARING_OFF;
+//	return ret;
+//}
+
+game::XAssetHeader lua_cod_getrawfile_stub(const char* name) {
+	auto ret = lua_cod_getrawfile.invoke<game::XAssetHeader>(name);
+	if (!ret.rawfile) {
+		return ret;
+	}
+
+	auto file = ret.rawfile->Buffer;
+	if (file[0] != 0x1B && file[1] != 0x4C && file[2] != 0x75 && file[3] != 0x61 && file[4] != 0x51) {
+		is_loading_raw_lua = true;
+		spdlog::info("Loading raw lua file '{}'", name);
+	}
+	return ret;
+}
+
 void patches::init() {
 	memory::write<bool>(0x89925C, false); // ui_netsource 0
 	memory::write<bool>(0x88A5AF, true); // xblive_rankedmatch 1
@@ -278,6 +245,7 @@ void patches::init() {
 	hooking::nop(0x6C1C89, 5); // nop DB_AuthLoad_End
 	db_reliable_fsopen_readonly_hook.create(0x41F3E0, &db_reliable_fsopen_readonly_stub);
 	db_load_xassets.create(0x58E8A0, &db_load_xassets_stub);
+	lua_cod_getrawfile.create(0x494BA0, &lua_cod_getrawfile_stub);
 
 	auto kernel32 = GetModuleHandleA("kernel32.dll");
 	if (kernel32 == NULL) {
