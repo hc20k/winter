@@ -24,7 +24,8 @@ hooking::detour db_authload_getiv;
 hooking::detour db_authload_analyzedata;
 hooking::detour validate_file_header_hook;
 hooking::detour db_authload_add_checksum_hook;
-
+hooking::detour db_reliable_fsopen_readonly_hook;
+hooking::detour db_load_xassets;
 
 
 bool is_loading_unsigned = false;
@@ -91,7 +92,7 @@ bool load_unsigned_fastfile(const char* path, int f, const char* name, game::XBl
 
 bool db_load_xfile_stub(const char* path, int f, const char* name, game::XBlock* blocks, void (_cdecl* interrupt)(), uint8_t* buf, int allocType, int flags, int requiredVersion, unsigned int desiredReadBytes) {
 
-	if (strstr(path, "coldharbor") != nullptr) {
+	if (strstr(path, "winter") != nullptr) {
 		is_loading_unsigned = true;
 		spdlog::warn("Loading unsigned fastfile '{}'", name);
 		//return load_unsigned_fastfile(path, f, name, blocks, interrupt, buf, allocType, flags, requiredVersion, desiredReadBytes);
@@ -106,24 +107,23 @@ bool db_load_xfile_stub(const char* path, int f, const char* name, game::XBlock*
 	return result;
 }
 
-void try_load_zone(const char* name) {
-	game::XZoneInfo info;
-	info.name = name;
-	info.allocFlags = 128u;
-	info.freeFlags = 0u;
-
-	// call 58E8A0 - DB_LoadXAssets
-	reinterpret_cast<void(__cdecl*)(const game::XZoneInfo*, int, int)>(0x58E8A0)(&info, 1u, 1u);
+void db_load_xassets_stub(const game::XZoneInfo* zone, unsigned int zoneCount, int sync) {
+	spdlog::info("Loading xassets for '{}', allocFlags: {:#x}, freeFlags: {:#x}, zoneCount: {:#x}, sync: {:#x}", zone->name, zone->allocFlags, zone->freeFlags, zoneCount, sync);
+	db_load_xassets.invoke<void>(zone, zoneCount, sync);
 }
 
+void try_load_zone(const char* name) {
+	strcpy_s(reinterpret_cast<char*>(0x12EED40), 64, name);
+	hooking::invoke<void>(0x465110);
+}
 
 int com_init_ui_and_common_xassets_stub() {
 	spdlog::info("Loading common and ui xassets");
 	int res = com_init_ui_and_common_xassets.invoke<int>();
-	try_load_zone("coldharbor");
+	try_load_zone("winter");
 
 	// test
-	auto testload = db_find_xasset_header_stub(game::ASSET_TYPE_RAWFILE, "testrawfile.txt", 1, -1).rawfile;
+	auto testload = db_find_xasset_header_stub(game::ASSET_TYPE_RAWFILE, "ui_mp/t6/main.lua", 1, -1).rawfile;
 
 	return res;
 }
@@ -228,6 +228,27 @@ int db_authload_end_stub() {
 	return db_authload_add_checksum_hook.invoke<int>();
 }
 
+uint32_t db_reliable_fsopen_readonly_stub(const char* path_, uint32_t* outClumpSize) {
+	std::string final_path;
+
+	if (!util::file_exists(path_)) {
+		std::string path = path_;
+		std::string game_path = hooking::invoke<char*>(0x4233C0);
+		// subtract game path from path
+		auto pos = path.find(game_path);
+		if (pos != std::string::npos) {
+			path = path.substr(pos + game_path.length());
+		}
+
+		final_path = game_path + "\\winter" + path;
+		path_ = final_path.c_str();
+	}
+
+	spdlog::info("Opening file '{}'", path_);
+
+	return db_reliable_fsopen_readonly_hook.invoke<uint32_t>(path_, outClumpSize);
+}
+
 void patches::init() {
 	memory::write<bool>(0x89925C, false); // ui_netsource 0
 	memory::write<bool>(0x88A5AF, true); // xblive_rankedmatch 1
@@ -255,6 +276,8 @@ void patches::init() {
 	db_authload_analyzedata.create(0x495370, &db_authload_analyzedata_stub);
 	validate_file_header_hook.create(0x6C23D0, &validate_file_header_stub);
 	hooking::nop(0x6C1C89, 5); // nop DB_AuthLoad_End
+	db_reliable_fsopen_readonly_hook.create(0x41F3E0, &db_reliable_fsopen_readonly_stub);
+	db_load_xassets.create(0x58E8A0, &db_load_xassets_stub);
 
 	auto kernel32 = GetModuleHandleA("kernel32.dll");
 	if (kernel32 == NULL) {
