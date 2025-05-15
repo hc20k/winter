@@ -3,9 +3,11 @@
 #include "filesystem.h"
 #include "logging.h"
 #include "ceg.h"
+#include "gsc.h"
 
 #include <Windows.h>
 #include <iostream>
+#include "lua.h"
 
 static BYTE OriginalCode[20];
 static PBYTE OriginalEP = 0;
@@ -62,6 +64,8 @@ void core::init() {
 	//filesystem::init();
 	ceg::init();
 	patches::init();
+	lua::init();
+	gsc::init();
 
 	spdlog::info("It's getting cold in here");
 	memcpy(OriginalEP, OriginalCode, 20);

@@ -34,7 +34,7 @@ std::vector<const char*> get_module_exports(HMODULE module) {
 
 uintptr_t nightly_hook_calls[] = {
 	0x1001AB2F, // top level exception filter
-	0x1001AB39, // console
+	//0x1001AB39, // console
 	0x1001AB34, // show system link, change version name
 	0x1001AB3E, // sets up, r_noborder
 	0x1001AB43, // some steam stuff? idk, and commands
@@ -63,7 +63,7 @@ void ceg::init() {
 
 	// remove all hooks from nightly
 	for (auto& call : nightly_hook_calls) {
-		//hooking::nop(dll_offset(call), 5);
+		hooking::nop(dll_offset(call), 5);
 	}
 
 	hooking::invoke<int>(dll_offset(0x1001ABA0)); // fuck ceg !

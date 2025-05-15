@@ -8,9 +8,13 @@
 #include <filesystem>
 #include "util.h"
 #include <ErrorRep.h>
+#include <fstream>
+#include <random>
+#include "images.h"
 
 #pragma comment(lib, "Faultrep.lib")
 
+#define LUA_MEM_SIZE 0x4000000u 
 
 hooking::detour db_find_xasset_header;
 hooking::detour db_try_load_xfile_internal;
@@ -26,13 +30,27 @@ hooking::detour validate_file_header_hook;
 hooking::detour db_authload_add_checksum_hook;
 hooking::detour db_reliable_fsopen_readonly_hook;
 hooking::detour db_load_xassets;
-hooking::detour lua_cod_getrawfile;
+hooking::detour hks_lua_pcall;
+hooking::detour kore_settings_init;
+hooking::detour lui_emergency_gc_failure;
+hooking::detour hkss_string_print;
+hooking::detour hks_error;
+
+hooking::detour _test_detour;
+
+std::vector<std::string> bot_names;
+
+const char* bot_connect_invited = "connect \"\\invited\\1\\cg_predictItems\\1\\cl_anonymous\\0\\color\\4\\head\\default\\model\\multi\\snaps\\20\\rate\\5000\\name\\%s\\clanAbbrev\\xxxx\\xuid\\%s\\xnaddr\\%s\\natType\\2\\protocol\\%d\\netfieldchk\\%d\\sessionmode\\%d\"";
 
 bool is_loading_unsigned = false;
-bool is_loading_raw_lua = false;
 
 game::XAssetHeader db_find_xasset_header_stub(int type, const char* a2, char a3, int a4) {
 	spdlog::info("Loading asset '{}' of type {}", a2, type);
+
+	if (type == 6) {
+		auto image_override = images::load_image(a2);
+	}
+
 	auto result = db_find_xasset_header.invoke<game::XAssetHeader>(type, a2, a3, a4);
 	return result;
 }
@@ -72,10 +90,6 @@ int com_init_ui_and_common_xassets_stub() {
 	spdlog::info("Loading common and ui xassets");
 	int res = com_init_ui_and_common_xassets.invoke<int>();
 	try_load_zone("winter");
-
-	// test
-	auto testload = db_find_xasset_header_stub(game::ASSET_TYPE_RAWFILE, "ui_mp/t6/main.lua", 1, -1).rawfile;
-
 	return res;
 }
 
@@ -187,36 +201,104 @@ uint32_t db_reliable_fsopen_readonly_stub(const char* path_, uint32_t* outClumpS
 	return db_reliable_fsopen_readonly_hook.invoke<uint32_t>(path_, outClumpSize);
 }
 
-//int hks_compiler_stub(game::hks::lua_State* a1, void* a2, void* a3, game::XAssetHeader header, void* a5, void* a6, void* a7) {
-//	auto file = header.rawfile->Buffer;
-//
-//	// check if file starts with 1B 4C 75 61 51 (LuaQ)
-//	if (file[0] == 0x1B && file[1] == 0x4C && file[2] == 0x75 && file[3] == 0x61 && file[4] == 0x51) {
-//		// already compiled
-//		return hks_compiler.invoke<int>(a1, a2, a3, header, a5, a6, a7);
-//	}
-//
-//	a1->m_global->m_bytecodeSharingMode = game::hks::HKS_BYTECODE_SHARING_ON;
-//	int ret = hks_compiler.invoke<int>(a1, a2, a3, header, a5, a6, a7);
-//	a1->m_global->m_bytecodeSharingMode = game::hks::HKS_BYTECODE_SHARING_OFF;
-//	return ret;
-//}
+void Sys_EnterCriticalSection(int section) {
+	EnterCriticalSection((LPCRITICAL_SECTION)(24 * section + 45166408));
+}
 
-game::XAssetHeader lua_cod_getrawfile_stub(const char* name) {
-	auto ret = lua_cod_getrawfile.invoke<game::XAssetHeader>(name);
-	if (!ret.rawfile) {
-		return ret;
+void Sys_LeaveCriticalSection(int section) {
+	LeaveCriticalSection((LPCRITICAL_SECTION)(24 * section + 45166408));
+}
+
+void lui_emergency_gc_failure_stub(uint32_t state, size_t size) {
+	bool free_mem_reserve = hooking::invoke<bool>(0x59E6B0, (*(uint32_t*)(state + 8) + 0x2C));
+
+	Sys_EnterCriticalSection(40);
+	if (free_mem_reserve) {
+		spdlog::error("LUI ERROR DUMP");
+		spdlog::error("==============");
+		spdlog::error("Failed to allocate a chunk of {} bytes", size);
+		hooking::invoke<void>(0x7016B0, state, state, 0, 32); // hks_traceback
+		const char* v6 = "<no data>";
+		int v7 = (*(int*)(state + 36) - 8);
+		if (v7 > *(int*)(state + 40)) {
+			v6 = hooking::invoke<const char*>(0x610710, state, v7, 0);
+		}
+		spdlog::error("{}\n", v6);
 	}
+	Sys_LeaveCriticalSection(38);
+}
 
-	auto file = ret.rawfile->Buffer;
-	if (file[0] != 0x1B && file[1] != 0x4C && file[2] != 0x75 && file[3] != 0x61 && file[4] != 0x51) {
-		is_loading_raw_lua = true;
-		spdlog::info("Loading raw lua file '{}'", name);
+int hkss_string_print_stub(char* dest, const size_t destSize, const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	int ret = vsnprintf(dest, destSize, fmt, args);
+	va_end(args);
+	if (ret < 0) {
+		spdlog::error("HKS print error: {}", ret);
+	}
+	else {
+		spdlog::info("HKS: {}", dest);
 	}
 	return ret;
 }
 
+void hks_debug_print(int state, const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	char buffer[0x800];
+	vsnprintf(buffer, sizeof(buffer), fmt, args);
+	va_end(args);
+	spdlog::error("{}", buffer);
+}
+
+int hks_compiler_signal_error_stub(int state) {
+	int v5 = *(int*)(state + 8);
+	*(size_t*)(v5 + 764) = (size_t)&hks_debug_print;
+	return hks_error.invoke<int>(state);
+}
+
+const char* sv_bot_name_random() {
+	static size_t bot_id = 0;
+	
+	if (!bot_names.empty()) {
+		bot_id %= bot_names.size();
+		const auto& entry = bot_names.at(bot_id++);
+		return entry.data();
+	}
+
+	return "bot";
+}
+
+void init_bot_names() {
+	// read from winter/bot_names.txt
+	std::ifstream file("winter/bot_names.txt");
+	if (!file.is_open()) {
+		spdlog::error("Failed to open bot_names.txt");
+		return;
+	}
+	std::string line;
+	while (std::getline(file, line)) {
+		if (!line.empty()) {
+			bot_names.push_back(line);
+		}
+	}
+	file.close();
+	if (bot_names.empty()) {
+		spdlog::error("No bot names found in bot_names.txt");
+		return;
+	}
+
+	// shuffle the bot names
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(bot_names.begin(), bot_names.end(), g);
+
+	spdlog::info("Loaded {} bot names", bot_names.size());
+}
+
 void patches::init() {
+	init_bot_names();
+
 	memory::write<bool>(0x89925C, false); // ui_netsource 0
 	memory::write<bool>(0x88A5AF, true); // xblive_rankedmatch 1
 	memory::write<bool>(0x88A63F, true); // developer 1
@@ -225,13 +307,15 @@ void patches::init() {
 	memory::write<bool>(0x5664CA, false); // tu11_partymigrate_allowPrivatePartyClientsToHost 0
 	memory::write<bool>(0x6B6607, true); // gpad_enabled 1
 
+	//hooking::qdetour((void*)0x96CF80, &get_lua_memory);
+
 	// various patches that make offline mode work
-	/*memory::write<int>(0x5BFA6B, 0xEB);
+	//memory::write<int>(0x5BFA6B, 0xEB);
 	memory::write<int>(0x5DDC20, 0xC3);
 	memory::write<int>(0x544240, 0xC3);
 	memory::write<int>(0xC1D910, 0x33);
 	memory::write<int>(0xBE0F26, 0x33);
-	memory::write<int>(0x4BE550, 0xC3);*/
+	memory::write<int>(0x4BE550, 0xC3);
 
 	db_find_xasset_header.create(0x526800, &db_find_xasset_header_stub);
 	//db_try_load_xfile_internal.create(xxx, &db_try_load_xfile_internal_stub);
@@ -245,7 +329,13 @@ void patches::init() {
 	hooking::nop(0x6C1C89, 5); // nop DB_AuthLoad_End
 	db_reliable_fsopen_readonly_hook.create(0x41F3E0, &db_reliable_fsopen_readonly_stub);
 	db_load_xassets.create(0x58E8A0, &db_load_xassets_stub);
-	lua_cod_getrawfile.create(0x494BA0, &lua_cod_getrawfile_stub);
+	hooking::qdetour((void*)0x492130, (void*) & sv_bot_name_random);
+
+	//lui_emergency_gc_failure.create(0x615830, &lui_emergency_gc_failure_stub); // lui_emergency_gc_failure
+	//hkss_string_print.create(0x4F7490, &hkss_string_print_stub); // hkss_string_print
+	//hks_error.create(0x962310, &hks_compiler_signal_error_stub); // hks_error
+	//hooking::nop(0x5A3F77, 5); // make lui panic not jmp out
+	//hooking::nop(0x5A3F8A, 2); // make lui panic not jmp out
 
 	auto kernel32 = GetModuleHandleA("kernel32.dll");
 	if (kernel32 == NULL) {

@@ -94,6 +94,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -112,6 +113,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,13 +161,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ceg.h" />
+    <ClInclude Include="console.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="demonware.h" />
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="gsc.h" />
     <ClInclude Include="hooking.h" />
+    <ClInclude Include="images.h" />
     <ClInclude Include="logging.h" />
+    <ClInclude Include="lua.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="patches.h" />
     <ClInclude Include="pch.h" />
@@ -173,12 +179,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ceg.cpp" />
+    <ClCompile Include="console.cpp" />
     <ClCompile Include="core.cpp" />
     <ClCompile Include="demonware.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="filesystem.cpp" />
+    <ClCompile Include="gsc.cpp" />
     <ClCompile Include="hooking.cpp" />
+    <ClCompile Include="images.cpp" />
     <ClCompile Include="logging.cpp" />
+    <ClCompile Include="lua.cpp" />
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="patches.cpp" />
     <ClCompile Include="pch.cpp">
